@@ -1,10 +1,10 @@
 # Ember Court
 
-[![make.fun competition](https://make.fun/badge/competition/best-card-game-20261122-1826)](https://make.fun/c/best-card-game-20261122-1826)
-[![make.fun rank](https://make.fun/badge/rank/best-card-game-20261122-1826/muhamadfajar160299-ctrl/makefun-best-card-game)](https://make.fun/c/best-card-game-20261122-1826)
-[![make.fun reward](https://make.fun/badge/reward/best-card-game-20261122-1826)](https://make.fun/c/best-card-game-20261122-1826)
+[![make.fun · best-card-game-20261122-1826](https://make.fun/badge/best-card-game-20261122-1826.svg)](https://make.fun/bounty/best-card-game-20261122-1826?utm_source=github&utm_medium=readme&utm_campaign=best-card-game-20261122-1826)
+[![rank](https://make.fun/badge/best-card-game-20261122-1826/muhamadfajar160299-ctrl/makefun-best-card-game/rank.svg)](https://make.fun/bounty/best-card-game-20261122-1826/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-card-game-20261122-1826)
+[![reward](https://make.fun/badge/best-card-game-20261122-1826/muhamadfajar160299-ctrl/makefun-best-card-game/reward.svg)](https://make.fun/bounty/best-card-game-20261122-1826?utm_source=github&utm_medium=readme&utm_campaign=best-card-game-20261122-1826)
 
-An original card battler built for the [make.fun "Make the best card game" bounty](https://make.fun/c/best-card-game-20261122-1826) ($50 prize).
+An original card battler built for the [make.fun "Make the best card game" bounty](https://make.fun/bounty/best-card-game-20261122-1826) ($50 prize).
 
 ## The game
 
