@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember Court — a card battler</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #0c2b1a;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #f5e9c8;
+    overflow: hidden;
+  }
+  #app { width: 1280px; height: 800px; margin: 0 auto; position: relative;
+    background: radial-gradient(ellipse at 50% 30%, #1d5c33 0%, #123d22 45%, #0a2413 100%);
+    border-left: 6px solid #c9a227; border-right: 6px solid #c9a227; }
+  .gold { color: #ffd700; }
+  .btn {
+    font-family: Georgia, serif; font-weight: bold; cursor: pointer;
+    background: linear-gradient(180deg, #ffe27a, #c9a227 60%, #8a6d1a);
+    color: #2a1f00; border: 3px solid #fff3b0; border-radius: 12px;
+    box-shadow: 0 4px 0 #5c470e, 0 6px 14px rgba(0,0,0,.5);
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #5c470e; }
+  .btn:disabled { filter: grayscale(.8) brightness(.6); cursor: default; }
+  /* ---------- title / end screens ---------- */
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 30px; }
+  .title { font-size: 96px; letter-spacing: 6px; color: #ffd700;
+    text-shadow: 0 0 24px rgba(255,180,0,.55), 0 4px 0 #6b4e00, 0 8px 18px rgba(0,0,0,.7); }
+  .subtitle { font-size: 26px; color: #ffe9a8; margin-top: 6px; letter-spacing: 3px; }
+  .rules { font-size: 21px; line-height: 1.5; max-width: 880px; margin: 26px 0 30px;
+    color: #f5e9c8; background: rgba(0,0,0,.35); border: 2px solid #c9a227;
+    border-radius: 14px; padding: 16px 22px; }
+  .bigbtn { font-size: 34px; padding: 16px 58px; }
+  .deco { display: flex; gap: 22px; margin-top: 34px; }
+  .deco .card { transform: rotate(-4deg); }
+  .deco .card:nth-child(2) { transform: rotate(2deg) translateY(-12px); }
+  .deco .card:nth-child(3) { transform: rotate(5deg); }
+  .endtitle { font-size: 110px; letter-spacing: 8px;
+    text-shadow: 0 0 30px rgba(255,190,0,.6), 0 4px 0 #6b4e00, 0 8px 20px rgba(0,0,0,.7); }
+  .endtitle.win { color: #ffd700; }
+  .endtitle.lose { color: #ff6b5e; text-shadow: 0 0 30px rgba(255,60,40,.5), 0 4px 0 #4d0d08, 0 8px 20px rgba(0,0,0,.7); }
+  .endscore { font-size: 30px; margin: 18px 0 30px; color: #fff; }
+  .hint { margin-top: 22px; font-size: 16px; color: #d8c98f; }
+  /* ---------- table ---------- */
+  .table { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 10px 18px 8px; }
+  .row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .opp-hand { min-height: 52px; }
+  .mini { width: 34px; height: 48px; border-radius: 5px; border: 2px solid #c9a227;
+    background: repeating-linear-gradient(45deg, #7a1f00 0 8px, #a83208 8px 16px); }
+  .hero-row { justify-content: space-between; padding: 2px 26px; }
+  .hero { display: flex; align-items: center; gap: 14px;
+    background: rgba(0,0,0,.4); border: 2px solid #c9a227; border-radius: 12px; padding: 6px 18px; }
+  .hero .hname { font-size: 22px; font-weight: bold; color: #ffe9a8; }
+  .hero .hp { font-size: 52px; font-weight: bold; color: #ff5b4d; line-height: 1;
+    text-shadow: 0 2px 0 #4d0d08, 0 0 14px rgba(255,80,60,.4); }
+  .hero .hp.low { animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { transform: scale(1.12); } }
+  .hero.me .hp { color: #7dff8a; text-shadow: 0 2px 0 #0d4d1a, 0 0 14px rgba(80,255,120,.4); }
+  .turntag { font-size: 22px; font-weight: bold; color: #ffd700; letter-spacing: 2px;
+    background: rgba(0,0,0,.45); border: 2px solid #c9a227; border-radius: 10px; padding: 8px 16px; }
+  .board { min-height: 132px; border-top: 2px dashed rgba(201,162,39,.45);
+    border-bottom: 2px dashed rgba(201,162,39,.45); }
+  .boardline { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .pile { width: 104px; height: 128px; border-radius: 10px; flex: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 3px solid #c9a227; box-shadow: 0 4px 10px rgba(0,0,0,.5); }
+  .pile .pcount { font-size: 42px; font-weight: bold; line-height: 1; }
+  .pile .plabel { font-size: 14px; letter-spacing: 2px; margin-top: 4px; }
+  .pile .psym { font-size: 36px; line-height: 1; }
+  .pile.deck { background: repeating-linear-gradient(45deg, #7a1f00 0 8px, #a83208 8px 16px); color: #ffe9a8; }
+  .pile.discard { background: linear-gradient(135deg, #52525b, #18181b); color: #e4e4e7; }
+  .pile.discard.empty { background: transparent; border-style: dashed;
+    border-color: rgba(245,233,200,.3); color: rgba(245,233,200,.5); box-shadow: none; }
+  .board-label { font-size: 15px; letter-spacing: 3px; color: #d8c98f; text-align: center; padding: 2px 0; }
+  .slot { width: 104px; height: 128px; border-radius: 10px; border: 2px dashed rgba(245,233,200,.25); }
+  /* ---------- cards ---------- */
+  .card { width: 148px; height: 208px; border-radius: 12px; position: relative;
+    background: linear-gradient(180deg, #fff8dc, #e8d9a0);
+    border: 3px solid #8a6d1a; color: #241a00; overflow: hidden; flex: none;
+    box-shadow: 0 6px 14px rgba(0,0,0,.55); }
+  .card .cost { position: absolute; top: 5px; left: 5px; z-index: 2;
+    width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #9fd8ff, #1d6fb8 70%);
+    color: #fff; font-size: 21px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+    border: 2px solid #dff1ff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+  .card .cname { font-size: 17px; font-weight: bold; text-align: center; padding: 7px 6px 4px 38px;
+    min-height: 30px; line-height: 1.05; }
+  .card .art { height: 104px; margin: 0 8px; border-radius: 8px; border: 2px solid rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center; }
+  .card .art span { font-size: 62px; color: rgba(255,255,255,.95); text-shadow: 0 3px 6px rgba(0,0,0,.6); }
+  .card .ctext { font-size: 14px; text-align: center; padding: 4px 8px 0; line-height: 1.15; min-height: 34px; }
+  .card .stats { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 5px 10px 7px; font-size: 22px; font-weight: bold; }
+  .card .atk { color: #b91c1c; }
+  .card .hpv { color: #15803d; }
+  .card.playable { cursor: pointer; }
+  .card.playable:hover { transform: translateY(-10px); border-color: #ffd700;
+    box-shadow: 0 0 0 3px #ffd700, 0 10px 20px rgba(0,0,0,.6); }
+  .card.cant { opacity: .62; }
+  .card.mini-card { width: 104px; height: 128px; }
+  .card.mini-card .cname { font-size: 13px; padding: 4px 4px 2px 28px; min-height: 22px; }
+  .card.mini-card .cost { width: 24px; height: 24px; font-size: 15px; top: 3px; left: 3px; }
+  .card.mini-card .art { height: 56px; margin: 0 5px; }
+  .card.mini-card .art span { font-size: 36px; }
+  .card.mini-card .ctext { display: none; }
+  .card.mini-card .stats { font-size: 18px; padding: 3px 7px 4px; }
+  /* ---------- bottom bar ---------- */
+  .hand { min-height: 216px; align-items: flex-end; }
+  .controls { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 0; }
+  .mana { font-size: 24px; font-weight: bold; color: #9fd8ff; letter-spacing: 2px;
+    background: rgba(0,0,0,.4); border: 2px solid #1d6fb8; border-radius: 10px; padding: 8px 16px; }
+  .mana .crystal { color: #38bdf8; }
+  .mana .empty { color: #33506b; }
+  .endbtn { font-size: 28px; padding: 12px 42px; }
+  .log { font-size: 18px; color: #ffe9a8; background: rgba(0,0,0,.45); border-radius: 8px;
+    padding: 6px 14px; max-width: 640px; text-align: center; min-height: 34px; }
+  .keys { font-size: 14px; color: #d8c98f; text-align: center; padding-top: 4px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="ember-court.js"></script>
+</body>
+</html>
